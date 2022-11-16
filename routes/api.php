@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\AuthApiController;
 use App\Http\Controllers\Api\BootcampApiController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -22,4 +23,9 @@ use Illuminate\Support\Facades\Route;
 Route::controller(BootcampApiController::class)->group(function(){
     Route::get('/bootcamps', 'index');
     Route::get('/bootcamps/detail/{id}', 'detail');
+    Route::post('/bootcamp/save', 'addBootcamp');
+});
+
+Route::controller(AuthApiController::class)->group(function(){
+    Route::post('/register', 'register');
 });

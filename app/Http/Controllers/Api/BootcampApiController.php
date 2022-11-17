@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Helpers\MessageHelper;
 use App\Http\Controllers\Controller;
 use App\Models\Bootcamp;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Symfony\Component\HttpFoundation\Response;
@@ -80,6 +81,7 @@ class BootcampApiController extends Controller
             'image'     => $bootcamp->thumbnail,
             'status'    => $bootcamp->status,
             'kuota'     => $bootcamp->kuota,
+            // 'terbuat'   => Carbon::parse($bootcamp->created_at)->translatedFormat('d F Y'),
         ];
     }
 
@@ -87,6 +89,7 @@ class BootcampApiController extends Controller
     {
         return response()->json([
             'status'    => true,
+            'msg'    => "Berhasil mendapatkan bootcamps",
             'data'      => $bootcamp,
         ], 200);
     }

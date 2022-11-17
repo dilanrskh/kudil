@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Helpers\FormatUserHelper;
 use App\Helpers\MessageHelper;
 use App\Http\Controllers\Controller;
 use App\Models\Peserta;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
@@ -38,11 +40,46 @@ class AuthApiController extends Controller
             'user_id'   => $user->id
         ]);
 
-        return response()->json([
-            'status'             => true,
-            'msg'                => 'Registrasi Berhasil',
-        ], 200);
+        $detail = User::where('id', $user->id)
+                    ->get()
+                    ->map(function ($detail){
+                        return FormatUserHelper::formatResultAuth($detail);                        
+                    });
 
+        $msg = "Registrasi Berhasil";
+        return MessageHelper::resultAuth(true, $msg, $detail);
     }
 
+    public function login(Request $request)
+    {
+        $validasi = Validator::make($request->all(), [
+            'email'     => ['required','email'],
+            'password'  => ['required'],
+        ]);
+
+        if($validasi->fails()){
+            $valIndex = $validasi->errors()->all();
+            return MessageHelper::error(false, $valIndex[0]);
+        }
+        
+        $user = User::where('email', $request->email)->first();
+
+        if($user){
+
+            if(password_verify($request->password, $user->password)){
+
+                $detail = User::where('id', $user->id)
+                        ->get()
+                        ->map(function ($detail){
+                            return FormatUserHelper::formatResultAuth($detail);              
+                        });
+
+                $msg = "Selamat Datang, $user->name";
+                return MessageHelper::resultAuth(true, $msg, $detail);
+            }
+        }
+
+        return MessageHelper::error(false, "Pastikan email & password sudah benar !");
+    }
+    
 }
